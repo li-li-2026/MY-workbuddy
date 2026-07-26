@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加载中</title>
+</head>
+<body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#4c6e4b;color:#fff;">
+  <p>请稍候...</p>
+</body>
+</html>
