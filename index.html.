@@ -87,3 +87,56 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:16px}
 @keyframes fadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 </style>
 </head>
+<body>
+<div class="app">
+<div class="topbar"><h1>创作工作台</h1><p>完成一项打勾，进度一目了然</p></div>
+<div class="content" id="home-content">
+<div class="section-title">📌 今日任务</div>
+<div class="menu-group" id="today-group"></div>
+<div class="section-title">📚 学习成长</div>
+<div class="menu-group" id="learn-group"></div>
+<div class="section-title">💡 内容创作</div>
+<div class="menu-group" id="create-group"></div>
+<div class="section-title">🧘 生活记录</div>
+<div class="menu-group" id="life-group"></div>
+<footer>WorkBuddy · 数据保存在本机</footer>
+</div>
+<div class="tabbar">
+<div class="tab active" onclick="goHome()"><span class="icon">🏠</span>工作台</div>
+<div class="tab" onclick="goStats()"><span class="icon">📊</span>统计</div>
+<div class="tab" onclick="goSettings()"><span class="icon">⚙️</span>设置</div>
+</div>
+<div class="detail" id="detail-view">
+<div class="detail-header"><button class="back" onclick="closeDetail()">‹ 返回</button><h2 id="detail-title">详情</h2></div>
+<div class="detail-body" id="detail-body"></div>
+</div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const LS=localStorage;
+const today=()=>new Date().toLocaleDateString('zh-CN');
+function save(k,v){LS.setItem('wb_'+k,JSON.stringify(v))}
+function load(k,d){try{return JSON.parse(LS.getItem('wb_'+k))??d}catch{return d}}
+let habits=load('habits',[{id:1,name:'舞蹈练习 30 分钟',done:false,cat:'hiphop'},{id:2,name:'吉他爬格子 20 分钟',done:false,cat:'guitar'},{id:3,name:'体态矫正训练',done:false,cat:'posture'},{id:4,name:'阅读/学习 30 分钟',done:false,cat:'learn'}]);
+let topics=load('topics',[]);
+let reviews=load('reviews',[]);
+let danceNotes=load('danceNotes',[]);
+let songs=load('songs',[]);
+let gears=load('gears',[]);
+let postureLogs=load('postureLogs',[]);
+let moods=load('moods',[]);
+let avoids=load('avoids',[]);
+let products=load('products',[]);
+const menuItems=[
+{id:'checkin',name:'每日打卡计划',desc:'舞蹈·吉他·体态·学习',icon:'✅',color:'#07c160',group:'today',badge:0},
+{id:'video',name:'短视频选题灵感',desc:'自动抓取热点 · 文案复盘',icon:'🎬',color:'#5e7ce0',group:'create',badge:1},
+{id:'hiphop',name:'Hiphop 舞蹈自学',desc:'周训练计划 · 纠错笔记',icon:'🕺',color:'#fa5151',group:'learn',badge:0},
+{id:'guitar',name:'电吉他自学进度',desc:'入门知识 · 乐谱 · 配件',icon:'🎸',color:'#ff9c19',group:'learn',badge:0},
+{id:'posture',name:'体态矫正记录',desc:'高低肩·腰酸矫正打卡',icon:'🧘',color:'#07c160',group:'life',badge:0},
+{id:'mood',name:'每日金融小知识',desc:'每天一个股票/金融知识·配视频',icon:'💰',color:'#5e7ce0',group:'life',badge:0},
+{id:'fitness',name:'健身训练',desc:'选部位生成动作·配套视频',icon:'💪',color:'#fa5151',group:'today',badge:0},
+{id:'posturefix',name:'体态矫正专区',desc:'大小脸·脊柱侧弯·O型腿·足弓',icon:'🦴',color:'#5e7ce0',group:'today',badge:0},
+{id:'english',name:'英语口语练习',desc:'三个月开口说·跟读+对话',icon:'🗣️',color:'#5e7ce0',group:'learn',badge:0},
+{id:'operate',name:'运营学习',desc:'0基础入门·新媒体运营实战',icon:'📈',color:'#ff9c19',group:'learn',badge:0}
+];
