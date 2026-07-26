@@ -177,3 +177,117 @@ english:()=>`<div class="card"><h3>🗣️ 三个月口语突破计划</h3><div 
 operate:()=>`<div class="card"><h3>📈 0基础运营入门路线</h3><div style="font-size:13px;color:#888;margin-bottom:10px;line-height:1.5">从0开始学运营，按阶段点击查看学习任务，每个任务都配了<strong style="color:#ff9c19">B站/抖音教学视频</strong>。</div><div class="toolbar"><button class="btn btn-primary" onclick="genOpPlan(1)">阶段1·认知</button><button class="btn btn-soft" onclick="genOpPlan(2)">阶段2·实操</button><button class="btn btn-soft" onclick="genOpPlan(3)">阶段3·进阶</button></div><div id="op-plan"><div class="empty">点上方按钮，生成学习任务 + 视频</div></div></div><div class="card"><h3>📚 运营快捷视频</h3><div id="op-videos"></div></div><div class="card"><h3>✏️ 学习打卡</h3><div class="form-row"><input type="text" id="op-log-input" placeholder="如：学了小红书选题技巧 + 笔记"><button class="btn btn-primary" onclick="addOpLog()">记录</button></div><ul class="list" id="op-logs"></ul></div>`,
 posturefix:()=>`<div class="card"><h3>🦴 体态矫正专区</h3><div style="font-size:13px;color:#888;margin-bottom:10px;line-height:1.5">选择你的体态问题，生成矫正动作 + <strong style="color:#5e7ce0">B站/抖音教学视频</strong>。</div><div class="toolbar"><button class="btn btn-primary" onclick="genPfPlan('face')">大小脸/脸型</button><button class="btn btn-soft" onclick="genPfPlan('spine')">脊柱侧弯</button><button class="btn btn-soft" onclick="genPfPlan('leg')">O型腿</button><button class="btn btn-soft" onclick="genPfPlan('foot')">足弓塌陷</button><button class="btn btn-soft" onclick="genPfPlan('calf')">小腿外翻</button><button class="btn btn-soft" onclick="genPfPlan('chin')">下巴后缩</button></div><div id="pf-plan"><div class="empty">点上方按钮，生成矫正动作 + 视频</div></div></div><div class="card"><h3>⚠️ 重要提醒</h3><div style="font-size:13px;color:#888;line-height:1.6"><p>• <b>大小脸/大小眼/颧骨突出/脸型不流畅</b>：多为骨骼结构问题，训练改善有限，严重建议咨询正颌或正畸医生</p><p>• <b>脊柱侧弯</b>：Cobb角＞40度建议就医，轻度可通过施罗特体操改善</p><p>• <b>下巴后缩</b>：可能是牙齿咬合问题，建议看正畸科</p><p>• 矫正训练需<b>每天坚持</b>，至少3个月才有效果</p></div></div><div class="card"><h3>✏️ 矫正打卡</h3><div class="form-row"><input type="text" id="pf-log-input" placeholder="如：施罗特体操20分钟+足弓训练"><button class="btn btn-primary" onclick="addPfLog()">记录</button></div><ul class="list" id="pf-logs"></ul></div>`
 };
+const detailInits={
+checkin:()=>{renderCheckin()},
+video:()=>{renderTopics();renderReviews()},
+hiphop:()=>{renderDanceNotes()},
+guitar:()=>{renderSongs();renderGears()},
+posture:()=>{renderPostureLogs()},
+mood:()=>{renderFinLogs();renderFinVideos()},
+fitness:()=>{renderFitLogs()},
+english:()=>{renderEngLogs();renderEngVideos()},
+operate:()=>{renderOpLogs();renderOpVideos()},
+posturefix:()=>{renderPfLogs()}
+};
+function renderCheckin(){
+const l=$('#habit-list');if(!l)return;l.innerHTML='';
+habits.forEach((h,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<input type="checkbox" ${h.done?'checked':''} onchange="toggleHabit(${i})"><div class="text ${h.done?'done':''}">${h.name}</div><button class="btn btn-danger" onclick="delHabit(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+const pct=habits.length?Math.round(habits.filter(h=>h.done).length/habits.length*100):0;
+$('#habit-progress').style.width=pct+'%';
+}
+function toggleHabit(i){
+habits[i].done=!habits[i].done;save('habits',habits);
+if(habits[i].done){let s=load('streak',0);const last=load('lastCheck','');if(last!==today()){save('streak',s+1);save('lastCheck',today())}}
+renderCheckin();renderMenu();
+}
+function addHabit(){const v=$('#new-habit').value.trim();if(!v)return;habits.push({id:Date.now(),name:v,done:false,cat:'other'});save('habits',habits);$('#new-habit').value='';renderCheckin();renderMenu()}
+function delHabit(i){habits.splice(i,1);save('habits',habits);renderCheckin();renderMenu()}
+function resetDaily(){habits.forEach(h=>h.done=false);save('habits',habits);renderCheckin();renderMenu()}
+async function fetchHot(type){
+const el=$('#hot-list');el.innerHTML='<div class="loading">⏳ 正在抓取热点...</div>';
+try{
+const res=await fetch(`https://api.zxki.cn/api/jhrs?type=${type}`);
+const d=await res.json();
+if(!d.data)throw 0;
+el.innerHTML=d.data.slice(0,15).map((h,i)=>{
+const title=h.title||h.name||'';
+const hot=h.hot||'';
+return `<div class="hot-item"><div class="hot-rank ${i<3?'top':''}">${i+1}</div><div class="hot-title">${title}</div>${hot?`<div class="hot-hot">${hot}</div>`:''}</div>`;
+}).join('');
+d.data.slice(0,3).forEach(h=>{
+const t=h.title||h.name;
+if(t&&!topics.find(x=>x.title===t))topics.push({title:t,src:type==='douyin'?'抖音':'B站',date:today()});
+});
+save('topics',topics);renderTopics();
+}catch(e){el.innerHTML='<div class="empty">⚠️ 抓取失败，请稍后重试</div>';}
+}
+function renderTopics(){
+const el=$('#topic-list');if(!el)return;
+el.innerHTML=topics.length?topics.map((t,i)=>`<div class="idea"><div class="t">${t.title}</div><div class="m">${t.src} · ${t.date}</div></div>`).join(''):'<div class="empty">暂无选题灵感</div>';
+}
+function addTopic(){const v=$('#v-idea').value.trim();if(!v)return;topics.push({title:v,src:'手动',date:today()});save('topics',topics);$('#v-idea').value='';renderTopics()}
+function renderReviews(){
+const l=$('#review-list');if(!l)return;l.innerHTML='';
+reviews.forEach((r,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text"><b>${r.title}</b> <span class="badge b-blue">${r.type}</span><br><small style="color:#888">${r.notes}</small></div><button class="btn btn-danger" onclick="delReview(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addReview(){const t=$('#v-title').value.trim(),ty=$('#v-type').value,n=$('#v-notes').value.trim();if(!t)return;reviews.unshift({title:t,type:ty,notes:n});save('reviews',reviews);$('#v-title').value='';$('#v-notes').value='';renderReviews()}
+function delReview(i){reviews.splice(i,1);save('reviews',reviews);renderReviews()}
+const dancePlan={'周一':'基础律动 & 上身 Isolation','周二':'脚步组合 & 踩拍变化','周三':'休息/拉伸 + 复盘旧舞段','周四':'核心力量 + 框架定型','周五':'Freestyle 跟练 15 分钟','周六':'完整舞段学习','周日':'拍摄练习视频并对比'};
+function genDancePlan(){
+const el=$('#dance-plan');el.innerHTML='<ul class="list">'+Object.entries(dancePlan).map(([d,t])=>`<li><div class="text"><b>${d}</b> · ${t}</div></li>`).join('')+'</ul>';
+}
+function renderDanceNotes(){
+const l=$('#dance-notes');if(!l)return;l.innerHTML='';
+danceNotes.forEach((n,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">${n}</div><button class="btn btn-danger" onclick="delDanceNote(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addDanceNote(){const v=$('#dance-note-input').value.trim();if(!v)return;danceNotes.unshift(v);save('danceNotes',danceNotes);$('#dance-note-input').value='';renderDanceNotes()}
+function delDanceNote(i){danceNotes.splice(i,1);save('danceNotes',danceNotes);renderDanceNotes()}
+const guitarBasics=['调音：标准 tuning E-A-D-G-B-e','右手拨弦：交替拨弦/下拨稳定，注意护弦','左手按弦：指尖垂直按弦，靠近品柱','爬格子：每日 5 分钟，从 60 bpm 开始','强力和弦：5 弦根与 6 弦根两种手型','推弦：无名指+中指辅助，保持音准'];
+function showGuitarBasics(){$('#guitar-basics').innerHTML='<ul class="list">'+guitarBasics.map(b=>`<li><div class="text">${b}</div></li>`).join('')+'</ul>'}
+function renderSongs(){
+const l=$('#guitar-songs');if(!l)return;l.innerHTML='';
+songs.forEach((s,i)=>{
+const cls=s.status==='已会'?'b-green':(s.status==='复习'?'b-amber':'b-blue');
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">${s.name} <span class="badge ${cls}">${s.status}</span></div><button class="btn btn-danger" onclick="delSong(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addSong(){const n=$('#g-song').value.trim(),s=$('#g-status').value;if(!n)return;songs.unshift({name:n,status:s});save('songs',songs);$('#g-song').value='';renderSongs()}
+function delSong(i){songs.splice(i,1);save('songs',songs);renderSongs()}
+function renderGears(){
+const l=$('#gear-notes');if(!l)return;l.innerHTML='';
+gears.forEach((g,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">${g}</div><button class="btn btn-danger" onclick="delGear(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addGear(){const v=$('#g-gear').value.trim();if(!v)return;gears.unshift(v);save('gears',gears);$('#g-gear').value='';renderGears()}
+function delGear(i){gears.splice(i,1);save('gears',gears);renderGears()}
+const posturePlan={'高低肩':'靠墙站立 3 分钟 + 单肩拉伸各 30 秒 × 3 组','腰酸':'猫牛式 10 次 + 臀桥 12 次 × 3 组 + 髂腰肌拉伸'};
+function genPosturePlan(){
+const el=$('#posture-plan');el.innerHTML=Object.entries(posturePlan).map(([k,v])=>`<div class="idea"><div class="t">${k}</div><div class="m">${v}</div></div>`).join('');
+}
+function renderPostureLogs(){
+const l=$('#posture-logs');if(!l)return;l.innerHTML='';
+postureLogs.forEach((d,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">✅ ${d}</div><button class="btn btn-danger" onclick="delPostureLog(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addPostureLog(){postureLogs.unshift(today()+' 完成体态矫正训练');save('postureLogs',postureLogs);renderPostureLogs()}
+function delPostureLog(i){postureLogs.splice(i,1);save('postureLogs',postureLogs);renderPostureLogs()}
