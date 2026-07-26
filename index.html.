@@ -291,3 +291,68 @@ l.appendChild(li);
 }
 function addPostureLog(){postureLogs.unshift(today()+' 完成体态矫正训练');save('postureLogs',postureLogs);renderPostureLogs()}
 function delPostureLog(i){postureLogs.splice(i,1);save('postureLogs',postureLogs);renderPostureLogs()}
+let finLogs=load('finLogs',[]);
+const finData={
+'stock':{title:'股票基础知识',tasks:[
+{a:'什么是股票',d:'了解股票本质：买股票就是买公司的一部分',k:'什么是股票 股票入门基础'},
+{a:'K线图怎么看',d:'学会看日线/周线K线图，理解阳线阴线',k:'K线图怎么看 股票K线入门'},
+{a:'市盈率PE',d:'理解PE含义，判断股票贵不贵',k:'市盈率PE 股票估值指标'},
+{a:'市净率PB',d:'理解PB含义，判断股价是否合理',k:'市净率PB 股票估值'},
+{a:'成交量与换手率',d:'理解成交量和换手率的含义',k:'成交量换手率 股票基础'},
+{a:'涨停跌停规则',d:'了解A股涨跌停板制度',k:'涨停跌停 A股交易规则'},
+{a:'分红与除权除息',d:'理解股票分红和除权除息',k:'股票分红 除权除息'},
+{a:'技术分析入门',d:'均线/MACD/KDJ基础指标',k:'股票技术分析 均线MACD入门'}
+]},
+'fund':{title:'基金理财知识',tasks:[
+{a:'什么是基金',d:'了解基金本质：把钱交给专业人打理',k:'什么是基金 基金入门基础'},
+{a:'指数基金定投',d:'学会定投沪深300/中证500',k:'指数基金定投 入门'},
+{a:'ETF基金',d:'理解ETF和场内基金的区别',k:'ETF基金 场内基金'},
+{a:'债券基金',d:'了解债基的风险和收益',k:'债券基金 稳健理财'},
+{a:'基金费率',d:'理解申购费/赎回费/管理费',k:'基金费率 申购费赎回费'},
+{a:'复利的力量',d:'理解复利，学会长期投资',k:'复利的力量 长期投资'}
+]},
+'economy':{title:'宏观经济知识',tasks:[
+{a:'GDP是什么',d:'理解GDP含义和经济增长',k:'GDP是什么 宏观经济'},
+{a:'CPI和通胀',d:'理解通胀对钱包的影响',k:'CPI通胀率 物价上涨'},
+{a:'降息降准',d:'央行降息降准对股市的影响',k:'降息降准 央行货币政策'},
+{a:'LPR利率',d:'理解LPR对房贷和投资的影响',k:'LPR利率 房贷利率'},
+{a:'汇率与外汇',d:'人民币升值贬值的影响',k:'汇率外汇 人民币升值'}
+]},
+'skill':{title:'实战投资技巧',tasks:[
+{a:'如何选股',d:'从行业到公司的选股思路',k:'如何选股 新手选股技巧'},
+{a:'止损止盈',d:'学会设置止损和止盈点',k:'止损止盈 股票交易纪律'},
+{a:'仓位管理',d:'不要满仓，学会分批建仓',k:'仓位管理 股票资金管理'},
+{a:'财报怎么看',d:'看懂三大报表：资产负债/利润/现金流',k:'财报怎么看 三大报表入门'},
+{a:'逆向投资',d:'别人恐惧我贪婪的逆向思维',k:'逆向投资 巴菲特投资理念'},
+{a:'定投策略',d:'微笑曲线定投法',k:'基金定投策略 微笑曲线'}
+]}
+};
+function genFinPlan(type){
+const plan=finData[type];
+const el=$('#fin-plan');
+if(!plan){el.innerHTML='<div class="empty">暂无该类知识</div>';return}
+el.innerHTML=`<div style="margin-bottom:8px;font-size:13px;color:#888">💰 <b style="color:#5e7ce0">${plan.title}</b></div>`+
+plan.tasks.map((t,i)=>{
+const bilibili=`https://search.bilibili.com/all?keyword=${encodeURIComponent(t.k)}`;
+const douyin=`https://www.douyin.com/search/${encodeURIComponent(t.k)}`;
+return `<div class="idea"><div class="t">${i+1}. ${t.a}</div><div class="m">📝 ${t.d}</div><div class="actions"><a href="${bilibili}" target="_blank" class="btn btn-primary" style="font-size:12px;padding:6px 10px">▶ B站教学</a><a href="${douyin}" target="_blank" class="btn btn-soft" style="font-size:12px;padding:6px 10px">▶ 抖音教学</a></div></div>`;
+}).join('');
+}
+function renderFinVideos(){
+const el=$('#fin-videos');if(!el)return;
+const links=[{name:'股票入门全套',kw:'股票入门全套教程 新手'},{name:'基金定投教程',kw:'基金定投教程 新手'},{name:'财经新闻怎么看',kw:'财经新闻怎么看 入门'},{name:'巴菲特投资理念',kw:'巴菲特投资理念 入门'},{name:'A股交易规则',kw:'A股交易规则 新手必看'}];
+el.innerHTML=links.map(l=>{
+const b=`https://search.bilibili.com/all?keyword=${encodeURIComponent(l.kw)}`;
+return `<div class="idea"><div class="t">${l.name}</div><div class="actions"><a href="${b}" target="_blank" class="btn btn-primary" style="font-size:12px;padding:6px 10px">▶ B站搜索</a></div></div>`;
+}).join('');
+}
+function renderFinLogs(){
+const l=$('#fin-logs');if(!l)return;l.innerHTML='';
+finLogs.forEach((f,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">${f}</div><button class="btn btn-danger" onclick="delFinLog(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addFinLog(){const v=$('#fin-log-input').value.trim();if(!v)return;finLogs.unshift(v+' ('+today()+')');save('finLogs',finLogs);$('#fin-log-input').value='';renderFinLogs()}
+function delFinLog(i){finLogs.splice(i,1);save('finLogs',finLogs);renderFinLogs()}
