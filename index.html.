@@ -356,3 +356,82 @@ l.appendChild(li);
 }
 function addFinLog(){const v=$('#fin-log-input').value.trim();if(!v)return;finLogs.unshift(v+' ('+today()+')');save('finLogs',finLogs);$('#fin-log-input').value='';renderFinLogs()}
 function delFinLog(i){finLogs.splice(i,1);save('finLogs',finLogs);renderFinLogs()}
+let fitLogs=load('fitLogs',[]);
+const fitData={
+'胸':[{a:'杠铃卧推',d:'4组×8-10次'},{a:'哑铃飞鸟',d:'3组×12次'},{a:'上斜哑铃推举',d:'3组×10次'},{a:'俯卧撑',d:'3组×15次'},{a:'双杠臂屈伸',d:'3组×10次'}],
+'背':[{a:'引体向上',d:'4组×6-8次'},{a:'杠铃划船',d:'4组×8-10次'},{a:'高位下拉',d:'3组×12次'},{a:'哑铃单臂划船',d:'3组×10次'},{a:'直臂下压',d:'3组×12次'}],
+'腿':[{a:'杠铃深蹲',d:'4组×8-10次'},{a:'腿举',d:'3组×12次'},{a:'罗马尼亚硬拉',d:'3组×10次'},{a:'保加利亚分腿蹲',d:'3组×10次'},{a:'小腿提踵',d:'3组×15次'}],
+'肩':[{a:'哑铃推举',d:'4组×8-10次'},{a:'侧平举',d:'3组×12次'},{a:'前平举',d:'3组×12次'},{a:'俯身飞鸟',d:'3组×12次'},{a:'面拉',d:'3组×15次'}],
+'核心':[{a:'平板支撑',d:'3组×60秒'},{a:'卷腹',d:'3组×20次'},{a:'俄罗斯转体',d:'3组×20次'},{a:'悬垂举腿',d:'3组×12次'},{a:'登山者',d:'3组×30秒'}],
+'全身燃脂':[{a:'波比跳',d:'4组×10次'},{a:'开合跳',d:'3组×30秒'},{a:'高抬腿',d:'3组×30秒'},{a:'深蹲跳',d:'3组×15次'},{a:'登山者',d:'3组×30秒'}]
+};
+function genFitPlan(part){
+const moves=fitData[part]||[];
+const el=$('#fit-plan');
+if(!moves.length){el.innerHTML='<div class="empty">暂无该部位计划</div>';return}
+el.innerHTML=`<div style="margin-bottom:8px;font-size:13px;color:#888">部位：<b style="color:#4c6e4b">${part}</b> · 点击动作名看教学视频</div>`+
+moves.map(m=>{
+const search=m.a+' 教学 标准动作';
+const bilibili=`https://search.bilibili.com/all?keyword=${encodeURIComponent(search)}`;
+const douyin=`https://www.douyin.com/search/${encodeURIComponent(search)}`;
+return `<div class="idea"><div class="t">${m.a}</div><div class="m">建议：${m.d}</div><div class="actions"><a href="${bilibili}" target="_blank" class="btn btn-primary" style="font-size:12px;padding:6px 10px">▶ B站视频</a><a href="${douyin}" target="_blank" class="btn btn-soft" style="font-size:12px;padding:6px 10px">▶ 抖音视频</a></div></div>`;
+}).join('');
+}
+function renderFitLogs(){
+const l=$('#fit-logs');if(!l)return;l.innerHTML='';
+fitLogs.forEach((f,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">${f}<br><small style="color:#888">${today()}</small></div><button class="btn btn-danger" onclick="delFitLog(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addFitLog(){const v=$('#fit-log-input').value.trim();if(!v)return;fitLogs.unshift(v+' ('+today()+')');save('fitLogs',fitLogs);$('#fit-log-input').value='';renderFitLogs()}
+function delFitLog(i){fitLogs.splice(i,1);save('fitLogs',fitLogs);renderFitLogs()}
+let engLogs=load('engLogs',[]);
+const engData={
+1:{title:'第1月·打基础（音标+跟读+短句）',tasks:[
+{a:'音标矫正练习',d:'每天20分钟，跟读48个国际音标',k:'英语音标发音教学 口型示范'},
+{a:'影子跟读入门',d:'每天15分钟，跟读慢速英语材料',k:'影子跟读 shadowing 英语入门'},
+{a:'日常短句背诵',d:'每天背5句实用口语短句',k:'英语日常口语短句 背诵'},
+{a:'连读弱读训练',d:'每天10分钟，练习连读和弱读',k:'英语连读弱读 发音规则'},
+{a:'录音对比纠正',d:'录自己的发音，对比原音找差距',k:'英语发音自测 录音对比纠正'}
+]},
+2:{title:'第2月·练表达（框架+场景+自述）',tasks:[
+{a:'口语表达框架',d:'学习"观点+原因+例子"表达法',k:'英语口语表达框架 逻辑说话'},
+{a:'场景对话练习',d:'餐厅/购物/问路/工作场景对话',k:'英语场景对话 实用口语'},
+{a:'自言自语练习',d:'每天用英语描述自己的日常5分钟',k:'英语自言自语练习 daily routine'},
+{a:'影子跟读进阶',d:'跟读TED演讲或美剧片段',k:'TED演讲影子跟读 美剧学口语'},
+{a:'话题即兴说',d:'随机抽话题，即兴说1-2分钟',k:'英语即兴演讲 话题练习'}
+]},
+3:{title:'第3月·实战（模拟对话+演讲+录音）',tasks:[
+{a:'模拟对话实战',d:'找语伴或用AI对话练习',k:'英语口语模拟对话 AI对话练习'},
+{a:'话题演讲训练',d:'每周完成1个3分钟话题演讲',k:'英语演讲训练 3分钟演讲'},
+{a:'影子跟读高级',d:'跟读新闻主播或快节奏对话',k:'英语新闻跟读 快速口语'},
+{a:'录音对比复盘',d:'录完整对话，复盘语法和发音问题',k:'英语口语录音复盘 纠错'},
+{a:'全英文日总结',d:'每天用英语总结一天，录下来',k:'英语日记 口头总结 daily summary'}
+]}
+};
+function genEngPlan(month){
+const plan=engData[month];
+const el=$('#eng-plan');
+if(!plan){el.innerHTML='<div class="empty">暂无该月计划</div>';return}
+el.innerHTML=`<div style="margin-bottom:8px;font-size:13px;color:#888">📖 <b style="color:#5e7ce0">${plan.title}</b></div>`+
+plan.tasks.map((t,i)=>{
+const bilibili=`https://search.bilibili.com/all?keyword=${encodeURIComponent(t.k)}`;
+const douyin=`https://www.douyin.com/search/${encodeURIComponent(t.k)}`;
+return `<div class="idea"><div class="t">${i+1}. ${t.a}</div><div class="m">📝 ${t.d}</div><div class="actions"><a href="${bilibili}" target="_blank" style12px;padding:6px 10px">▶ B站教学</a><a href="${douyin}" target="_blank" class="btn btn-soft" style="font-size:12px;padding:6px 10px">▶ 抖音教学</a></div></div>`;
+}).join('');
+}
+function renderEngVideos(){
+const el=$('#eng-videos');if(!el)return;
+const links=[{name:'影子跟读合集',kw:'影子跟读 英语口语 合集'},{name:'口语表达技巧',kw:'英语口语表达技巧 干货'},{name:'日常对话练习',kw:'英语日常对话练习 场景'},{name:'美剧学口语',kw:'美剧学口语 经典片段'},{name:'音标发音全套',kw:'英语音标发音教学 全套'}];
+el.innerHTML=links.map(l=>{
+const b=`https://search.bilibili.com/all?keyword=${encodeURIComponent(l.kw)}`;
+return `<div class="idea"><div class="t">${l.name}</div><div class="actions"><a href="${b}" target="_blank" class="btn btn-primary" style="font-size:12px;padding:6px 10px">▶ B站搜索</a></div></div>`;
+}).join('');
+}
+function renderEngLogs(){
+const l=$('#eng-logs');if(!l)return;l.innerHTML='';
+engLogs.forEach((e,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">${e}</div><button class="btn btn-danger" onclick="delEngLog(${i})" style="padding:4px 
