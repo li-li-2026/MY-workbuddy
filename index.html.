@@ -435,3 +435,100 @@ const l=$('#eng-logs');if(!l)return;l.innerHTML='';
 engLogs.forEach((e,i)=>{
 const li=document.createElement('li');
 li.innerHTML=`<div class="text">${e}</div><button class="btn btn-danger" onclick="delEngLog(${i})" style="padding:4px 
+let opLogs=load('opLogs',[]);
+const opData={
+1:{title:'阶段1·建立运营认知（1-2周）',tasks:[
+{a:'什么是运营',d:'了解运营的本质：连接产品和用户',k:'什么是运营 运营入门基础概念'},
+{a:'运营岗位分类',d:'内容运营/用户运营/活动运营/新媒体运营',k:'运营岗位分类 区别 新媒体运营'},
+{a:'运营核心思维',d:'用户思维+数据思维+迭代思维',k:'运营思维 用户思维 数据思维'},
+{a:'常见运营指标',d:'DAU/留存率/转化率/ROI等',k:'运营指标 DAU 留存率 转化率'},
+{a:'运营工具大全',d:'熟悉排版/做图/数据/剪辑工具',k:'运营工具推荐 新媒体工具大全'}
+]},
+2:{title:'阶段2·实操练习（3-6周）',tasks:[
+{a:'小红书运营实操',d:'选题+标题+封面+正文排版',k:'小红书运营 0基础 选题技巧'},
+{a:'抖音账号运营',d:'账号定位+内容规划+发布节奏',k:'抖音运营 0基础 账号定位'},
+{a:'公众号运营',d:'选题策划+排版+涨粉技巧',k:'公众号运营 新手 选题涨粉'},
+{a:'文案写作训练',d:'爆款标题+正文结构+钩子设计',k:'运营文案写作 爆款标题技巧'},
+{a:'数据分析入门',d:'看懂后台数据+做复盘报告',k:'运营数据分析 后台数据 复盘'}
+]},
+3:{title:'阶段3·进阶提升（7-10周）',tasks:[
+{a:'活动策划实战',d:'完整策划一场线上活动',k:'运营活动策划 线上活动方案'},
+{a:'用户增长策略',d:'裂变/拉新/留存/召回方法',k:'用户增长 裂变拉新 留存召回'},
+{a:'社群运营',d:'建群/活跃/转化/管理',k:'社群运营 建群活跃转化'},
+{a:'投放与推广',d:'投流基础+ROI计算+优化',k:'运营投放 信息流投流 ROI'},
+{a:'运营复盘报告',d:'写一份完整运营复盘报告',k:'运营复盘报告 模板 写法'}
+]}
+};
+function genOpPlan(stage){
+const plan=opData[stage];
+const el=$('#op-plan');
+if(!plan){el.innerHTML='<div class="empty">暂无该阶段计划</div>';return}
+el.innerHTML=`<div style="margin-bottom:8px;font-size:13px;color:#888">📖 <b style="color:#ff9c19">${plan.title}</b></div>`+
+plan.tasks.map((t,i)=>{
+const bilibili=`https://search.bilibili.com/all?keyword=${encodeURIComponent(t.k)}`;
+const douyin=`https://www.douyin.com/search/${encodeURIComponent(t.k)}`;
+return `<div class="idea"><div class="t">${i+1}. ${t.a}</div><div class="m">📝 ${t.d}</div><div class="actions"><a href="${bilibili}" target="_blank" class="btn btn-primary" style="font-size:12px;padding:6px 10px">▶ B站教学</a><a href="${douyin}" target="_blank" class="btn btn-soft" style="font-size:12px;padding:6px 10px">▶ 抖音教学</a></div></div>`;
+}).join('');
+}
+function renderOpVideos(){
+const el=$('#op-videos');if(!el)return;
+const links=[{name:'运营入门全套教程',kw:'运营入门全套教程 0基础'},{name:'小红书运营干货',kw:'小红书运营干货 爆款'},{name:'抖音运营从0开始',kw:'抖音运营从0开始 账号'},{name:'文案写作技巧',kw:'运营文案写作技巧 爆款标题'},{name:'数据分析复盘',kw:'运营数据分析复盘 教程'}];
+el.innerHTML=links.map(l=>{
+const b=`https://search.bilibili.com/all?keyword=${encodeURIComponent(l.kw)}`;
+return `<div class="idea"><div class="t">${l.name}</div><div class="actions"><a href="${b}" target="_blank" class="btn btn-primary" style="font-size:12px;padding:6px 10px">▶ B站搜索</a></div></div>`;
+}).join('');
+}
+function renderOpLogs(){
+const l=$('#op-logs');if(!l)return;l.innerHTML='';
+opLogs.forEach((o,i)=>{
+const li=document.createElement('li');
+li.innerHTML=`<div class="text">${o}</div><button class="btn btn-danger" onclick="delOpLog(${i})" style="padding:4px 8px;font-size:12px">删</button>`;
+l.appendChild(li);
+});
+}
+function addOpLog(){const v=$('#op-log-input').value.trim();if(!v)return;opLogs.unshift(v+' ('+today()+')');save('opLogs',opLogs);$('#op-log-input').value='';renderOpLogs()}
+function delOpLog(i){opLogs.splice(i,1);save('opLogs',opLogs);renderOpLogs()}
+let pfLogs=load('pfLogs',[]);
+const pfData={
+'face':{title:'大小脸/脸型不流畅',tasks:[
+{a:'咬肌放松按摩',d:'每天早晚各5分钟，放松偏大侧咬肌',k:'咬肌放松按摩 大小脸矫正'},
+{a:'面部肌肉平衡训练',d:'练习双侧均匀咀嚼+表情肌对称发力',k:'面部肌肉平衡训练 大小脸'},
+{a:'下颌关节松动术',d:'轻柔活动下颌关节，改善关节偏移',k:'下颌关节松动 颞下颌关节训练'},
+{a:'舌位矫正',d:'正确舌顶上颚，改善面部发育',k:'舌位矫正 mewing 正确舌位'}
+],note:'大小脸多为长期单侧咀嚼/睡姿导致，骨骼型需咨询正颌医生'},
+'spine':{title:'脊柱侧弯',tasks:[
+{a:'施罗特体操',d:'每天30分钟，专业脊柱侧弯矫正体操',k:'施罗特体操 脊柱侧弯矫正'},
+{a:'死虫子动作',d:'3组×15次，核心稳定改善脊柱',k:'死虫子动作 dead bug 核心训练'},
+{a:'鸟狗式',d:'3组×12次/侧，增强脊柱稳定肌',k:'鸟狗式 bird dog 脊柱稳定'},
+{a:'侧屈拉伸',d:'每天2组×30秒/侧，拉伸凹侧肌肉',k:'脊柱侧弯侧屈拉伸 矫正运动'},
+{a:'靠墙站立矫正',d:'每天10分钟，靠墙校准脊柱中立位',k:'靠墙站立 脊柱中立位 矫正'}
+],note:'Cobb角＞40度建议就医，轻度可通过体操改善'},
+'leg':{title:'O型腿',tasks:[
+{a:'夹球深蹲',d:'膝盖夹球做深蹲3组×15次',k:'O型腿矫正 夹球深蹲'},
+{a:'内侧肌肉强化',d:'坐姿夹腿3组×15次，强化内收肌',k:'O型腿 内收肌训练 腿型矫正'},
+{a:'靠墙夹膝/k:'O型腿靠墙夹膝 矫正训练'},
+{a:'弹力带内收',d:'弹力带内收腿3组×12次/侧',k:'弹力带内收腿 O型腿矫正'},
+{a:'拉伸外侧肌肉',d:'拉伸髂胫束+臀肌30秒/侧',k:'髂胫束拉伸 O型腿 腿型'}
+],note:'骨骼型O型腿严重者需就医，功能性可通过训练改善'},
+'foot':{title:'足弓塌陷',tasks:[
+{a:'缩足运动',d:'每天3组×20次，激活足底肌肉',k:'缩足运动 short foot 足弓训练'},
+{a:'毛巾抓取',d:'用脚趾抓毛巾3组×20次',k:'毛巾抓取 足弓塌陷 足底训练'},
+{a:'弹力带足外翻',d:'3组×15次/脚，强化足弓支撑肌',k:'弹力带足外翻 足弓训练'},
+{a:'单腿站立平衡',d:'每天3组×30秒/脚，提升足弓稳定性',k:'单腿站立平衡 足弓稳定'},
+{a:'网球足底按摩',d:'每天5分钟/脚，放松足底筋膜',k:'网球足底按摩 足底筋膜放松'}
+],note:'严重扁平足建议定制矫形鞋垫'},
+'calf':{title:'小腿外翻',tasks:[
+{a:'足弓激活训练',d:'缩足运动3组×20次，改善足弓',k:'小腿外翻 足弓激活 矫正'},
+{a:'正确步态训练',d:'走路注意足尖朝前+足弓发力',k:'正确步态训练 小腿外翻'},
+{a:'拉伸小腿外侧',d:'每天3组×30秒/侧',k:'小腿外侧拉伸 腿型矫正'},
+{a:'弹力带内旋',d:'3组×15次/脚，改善胫骨外旋',k:'弹力带内旋 小腿外翻矫正'},
+{a:'泡沫轴放松',d:'每天5分钟/腿，放松小腿外侧',k:'泡沫轴小腿外侧 放松'}
+],note:'小腿外翻多伴随足弓塌陷，需一起矫正'},
+'chin':{title:'下巴后缩',tasks:[
+{a:'舌顶上颚训练',d:'每天随时练习，正确舌位刺激下巴发育',k:'下巴后缩 舌顶上颚 mewing'},
+{a:'颈部前屈矫正',d:'收下巴训练3组×15次',k:'收下巴训练 颈部前屈矫正'},
+{a:'咬合检查',d:'检查是否有深覆合/反颌，建议看正畸',k:'下巴后缩 正畸 咬合问题'},
+{a:'下颌前伸训练',d:'轻柔前伸下颌3组×10次',k:'下颌前伸训练 下巴后缩'},
+{a:'改善口呼吸',d:'改用鼻呼吸，避免下颌后缩加重',k:'口呼吸矫正 鼻呼吸 下巴后缩'}
+],note:'下巴后缩可能是骨骼/咬合问题，建议看正畸科医生'}
+};
